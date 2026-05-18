@@ -7,113 +7,325 @@
   <title>Penerjemah AI</title>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f5;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    textarea,
-    select,
-    button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #d4d4d8;
+    * {
       box-sizing: border-box;
     }
 
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, #dbeafe, transparent 35%),
+        radial-gradient(circle at bottom right, #fce7f3, transparent 35%),
+        #f8fafc;
+      color: #0f172a;
+      padding: 18px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding-top: 20px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.10);
+      backdrop-filter: blur(16px);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 16px;
+      outline: none;
+      background: #ffffff;
+      color: #0f172a;
+      transition: 0.2s;
+    }
+
+    textarea:focus,
+    select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
     textarea {
-      min-height: 140px;
+      min-height: 150px;
       resize: vertical;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 16px;
     }
 
     button {
-      background: #111827;
-      color: white;
+      width: 100%;
       border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-    }
-
-    .result {
-      margin-top: 20px;
+      border-radius: 16px;
       padding: 15px;
-      background: #f9fafb;
-      border-radius: 12px;
-      min-height: 80px;
-      white-space: pre-wrap;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
     }
 
-    .label {
+    .primary {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.28);
+    }
+
+    .primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.35);
+    }
+
+    .primary:disabled {
+      background: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+
+    .result-box {
+      margin-top: 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 120px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: #0f172a;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      gap: 10px;
+    }
+
+    .result-header h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .copy-btn {
+      width: auto;
+      padding: 9px 12px;
+      font-size: 13px;
+      border-radius: 999px;
+    }
+
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      background: white;
+      border-radius: 50%;
+      animation: pulse 1s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes pulse {
+      0%, 80%, 100% {
+        opacity: 0.35;
+        transform: scale(0.8);
+      }
+      40% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .footer {
       margin-top: 16px;
-      font-weight: bold;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .actions {
+        grid-template-columns: 2fr 1fr;
+      }
+
+      h1 {
+        font-size: 44px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Penerjemah AI</h1>
+  <main class="app">
+    <section class="hero">
+      <div class="badge">AI Translator by Gemini</div>
+      <h1>Penerjemah AI</h1>
+      <p class="subtitle">
+        Terjemahkan teks ke berbagai bahasa dengan tampilan simpel dan modern.
+      </p>
+    </section>
 
-    <div class="label">Masukkan teks</div>
-    <textarea id="text" placeholder="Tulis teks yang mau diterjemahkan..."></textarea>
+    <section class="card">
+      <label for="text">Masukkan teks</label>
+      <textarea id="text" placeholder="Contoh: Halo, selamat pagi."></textarea>
 
-    <div class="label">Terjemahkan ke</div>
-    <select id="targetLanguage">
-      <option value="Indonesia">Bahasa Indonesia</option>
-      <option value="English">Bahasa Inggris</option>
-      <option value="Japanese">Bahasa Jepang</option>
-      <option value="Korean">Bahasa Korea</option>
-      <option value="Arabic">Bahasa Arab</option>
-      <option value="Chinese">Bahasa Mandarin</option>
-      <option value="French">Bahasa Prancis</option>
-      <option value="German">Bahasa Jerman</option>
-      <option value="Spanish">Bahasa Spanyol</option>
-    </select>
+      <div class="row">
+        <div>
+          <label for="targetLanguage">Terjemahkan ke</label>
+          <select id="targetLanguage">
+            <option value="English">Bahasa Inggris</option>
+            <option value="Indonesia">Bahasa Indonesia</option>
+            <option value="Japanese">Bahasa Jepang</option>
+            <option value="Korean">Bahasa Korea</option>
+            <option value="Arabic">Bahasa Arab</option>
+            <option value="Chinese">Bahasa Mandarin</option>
+            <option value="French">Bahasa Prancis</option>
+            <option value="German">Bahasa Jerman</option>
+            <option value="Spanish">Bahasa Spanyol</option>
+          </select>
+        </div>
 
-    <button id="translateBtn" onclick="translateText()">Terjemahkan</button>
+        <div>
+          <label for="tone">Gaya bahasa</label>
+          <select id="tone">
+            <option value="natural">Natural</option>
+            <option value="formal">Formal</option>
+            <option value="casual">Santai</option>
+            <option value="simple">Sederhana</option>
+          </select>
+        </div>
+      </div>
 
-    <div class="label">Hasil terjemahan</div>
-    <div id="result" class="result">Hasil akan muncul di sini...</div>
-  </div>
+      <div class="actions">
+        <button id="translateBtn" class="primary" onclick="translateText()">
+          Terjemahkan
+        </button>
+
+        <button class="secondary" onclick="clearText()">
+          Bersihkan
+        </button>
+      </div>
+
+      <div class="result-header">
+        <h2>Hasil terjemahan</h2>
+        <button class="secondary copy-btn" onclick="copyResult()">
+          Salin
+        </button>
+      </div>
+
+      <div id="result" class="result-box">Hasil akan muncul di sini...</div>
+    </section>
+
+    <div class="footer">
+      Powered by Gemini API
+    </div>
+  </main>
 
   <script>
     async function translateText() {
       const text = document.getElementById("text").value.trim();
       const targetLanguage = document.getElementById("targetLanguage").value;
+      const tone = document.getElementById("tone").value;
       const result = document.getElementById("result");
       const button = document.getElementById("translateBtn");
 
       if (!text) {
-        result.textContent = "Masukkan teks dulu.";
+        result.textContent = "Masukkan teks dulu ya.";
         return;
       }
 
       button.disabled = true;
-      button.textContent = "Menerjemahkan...";
+      button.innerHTML = `
+        <span class="loading">
+          Menerjemahkan
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
+      `;
       result.textContent = "Sedang menerjemahkan...";
 
       try {
@@ -125,13 +337,14 @@
           body: JSON.stringify({
             text,
             targetLanguage,
+            tone,
           }),
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Terjadi kesalahan.");
+          throw new Error(data.detail || data.error || "Terjadi kesalahan.");
         }
 
         result.textContent = data.translatedText;
@@ -141,6 +354,22 @@
         button.disabled = false;
         button.textContent = "Terjemahkan";
       }
+    }
+
+    function clearText() {
+      document.getElementById("text").value = "";
+      document.getElementById("result").textContent = "Hasil akan muncul di sini...";
+    }
+
+    async function copyResult() {
+      const result = document.getElementById("result").textContent;
+
+      if (!result || result === "Hasil akan muncul di sini...") {
+        return;
+      }
+
+      await navigator.clipboard.writeText(result);
+      alert("Hasil terjemahan berhasil disalin.");
     }
   </script>
 </body>
