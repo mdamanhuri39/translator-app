@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Penerjemah AI</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    textarea,
+    select,
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #d4d4d8;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    button {
+      background: #111827;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 12px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+
+    .label {
+      margin-top: 16px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Penerjemah AI</h1>
+
+    <div class="label">Masukkan teks</div>
+    <textarea id="text" placeholder="Tulis teks yang mau diterjemahkan..."></textarea>
+
+    <div class="label">Terjemahkan ke</div>
+    <select id="targetLanguage">
+      <option value="Indonesia">Bahasa Indonesia</option>
+      <option value="English">Bahasa Inggris</option>
+      <option value="Japanese">Bahasa Jepang</option>
+      <option value="Korean">Bahasa Korea</option>
+      <option value="Arabic">Bahasa Arab</option>
+      <option value="Chinese">Bahasa Mandarin</option>
+      <option value="French">Bahasa Prancis</option>
+      <option value="German">Bahasa Jerman</option>
+      <option value="Spanish">Bahasa Spanyol</option>
+    </select>
+
+    <button id="translateBtn" onclick="translateText()">Terjemahkan</button>
+
+    <div class="label">Hasil terjemahan</div>
+    <div id="result" class="result">Hasil akan muncul di sini...</div>
+  </div>
+
+  <script>
+    async function translateText() {
+      const text = document.getElementById("text").value.trim();
+      const targetLanguage = document.getElementById("targetLanguage").value;
+      const result = document.getElementById("result");
+      const button = document.getElementById("translateBtn");
+
+      if (!text) {
+        result.textContent = "Masukkan teks dulu.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Menerjemahkan...";
+      result.textContent = "Sedang menerjemahkan...";
+
+      try {
+        const response = await fetch("/api/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text,
+            targetLanguage,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Terjadi kesalahan.");
+        }
+
+        result.textContent = data.translatedText;
+      } catch (error) {
+        result.textContent = "Error: " + error.message;
+      } finally {
+        button.disabled = false;
+        button.textContent = "Terjemahkan";
+      }
+    }
+  </script>
+</body>
+</html>
