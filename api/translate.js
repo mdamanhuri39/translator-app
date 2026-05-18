@@ -1,9 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -12,18 +6,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text, targetLanguage, tone } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
 
-    if (!process.env.GEMINI_API_KEY) {
+    if (!apiKey) {
       return res.status(500).json({
         error: "API key belum terbaca.",
-        detail: "Pastikan GEMINI_API_KEY sudah ditambahkan di Vercel Environment Variables dan sudah redeploy.",
+        detail: "Pastikan GEMINI_API_KEY sudah ada di Vercel Environment Variables dan sudah redeploy.",
       });
     }
 
+    const { text, targetLanguage, tone } = req.body || {};
+
     if (!text || !targetLanguage) {
       return res.status(400).json({
-        error: "Text dan bahasa tujuan wajib diisi.",
+        error: "Teks dan bahasa tujuan wajib diisi.",
       });
     }
 
@@ -50,28 +46,55 @@ Teks:
 ${text}
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-    });
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
+
+    const data = await geminiResponse.json();
+
+    if (!geminiResponse.ok) {
+      return res.status(geminiResponse.status).json({
+        error: "Gemini API error.",
+        detail: data?.error?.message || "Terjadi kesalahan dari Gemini API.",
+      });
+    }
+
+    const translatedText =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    if (!translatedText) {
+      return res.status(500).json({
+        error: "Hasil terjemahan kosong.",
+        detail: "Gemini tidak mengembalikan teks terjemahan.",
+      });
+    }
 
     return res.status(200).json({
-      translatedText: response.text,
+      translatedText,
     });
   } catch (error) {
     console.error("TRANSLATE_ERROR:", error);
 
     return res.status(500).json({
       error: "Gagal menerjemahkan teks.",
-      detail: error.message,
-    });
-  }
-}      translatedText: response.text,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      error: "Gagal menerjemahkan teks.",
-      detail: error.message,
+      detail: error.message || "Unknown error",
     });
   }
 }
